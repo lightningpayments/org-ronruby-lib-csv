@@ -9,7 +9,7 @@ version := "0.1"
 // -------------------------------------------------------------------------------------------------
 // Application
 // -------------------------------------------------------------------------------------------------
-lazy val root = (project in file(".")).enablePlugins(GitVersion)
+lazy val root = project in file(".")
 
 // -------------------------------------------------------------------------------------------------
 // Scala compiler settings
@@ -25,13 +25,6 @@ Compile / scalacOptions ++= {
 crossScalaVersions := Seq("2.13.3")
 scalaVersion := crossScalaVersions.value.head
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oSD")
-
-// -------------------------------------------------------------------------------------------------
-// Publisher
-// -------------------------------------------------------------------------------------------------
-credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
-resolvers ++= GitVersion.resolvers
-publishTo := GitVersion.publishTo
 
 // -------------------------------------------------------------------------------------------------
 // Library dependencies
