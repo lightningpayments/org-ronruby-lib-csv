@@ -1,19 +1,11 @@
-// -------------------------------------------------------------------------------------------------
-// Package configuration
-// -------------------------------------------------------------------------------------------------
+
 name := "Csv Lib"
 organization := "org.ronruby"
 organizationHomepage := None
 version := "0.1"
 
-// -------------------------------------------------------------------------------------------------
-// Application
-// -------------------------------------------------------------------------------------------------
 lazy val root = project in file(".")
 
-// -------------------------------------------------------------------------------------------------
-// Scala compiler settings
-// -------------------------------------------------------------------------------------------------
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
 scalacOptions in Compile ++= Seq("-deprecation", "-explaintypes", "-feature", "-unchecked")
 Compile / scalacOptions ++= {
@@ -26,9 +18,6 @@ crossScalaVersions := Seq("2.13.3")
 scalaVersion := crossScalaVersions.value.head
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oSD")
 
-// -------------------------------------------------------------------------------------------------
-// Library dependencies
-// -------------------------------------------------------------------------------------------------
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-guice" % "2.8.2",
   "org.typelevel" %% "cats-core" % "2.1.1",
@@ -45,22 +34,12 @@ libraryDependencies ++= Seq(
   "org.scalatestplus" %% "scalacheck-1-14" % "3.2.0.0" % "test"
 )
 
-// -------------------------------------------------------------------------------------------------
-// Scapegoat Configuration (static code analysis)
-// -------------------------------------------------------------------------------------------------
 scapegoatConsoleOutput := true
 scapegoatIgnoredFiles := Seq.empty
 scapegoatVersion in ThisBuild := "1.4.5"
 
-// -------------------------------------------------------------------------------------------------
-// Scoverage Configuration (code coverage)
-// -------------------------------------------------------------------------------------------------
 coverageFailOnMinimum := true
 coverageHighlighting := true
 coverageMinimum := 100
 coverageExcludedPackages := """<empty>;..*Module.*;"""
 
-// -------------------------------------------------------------------------------------------------
-// Scalastyle Configuration (check style)
-// -------------------------------------------------------------------------------------------------
-scalastyleFailOnError := true
