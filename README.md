@@ -3,6 +3,11 @@
 [![Codacy Grade Badge](https://api.codacy.com/project/badge/Grade/7a2742cce08742939453f5cf86b1f1a9)](https://www.codacy.com/app/zamblauskas/scala-csv-parser/dashboard)
 [![Codacy Coverage Badge](https://api.codacy.com/project/badge/Coverage/7a2742cce08742939453f5cf86b1f1a9)](https://www.codacy.com/app/zamblauskas/scala-csv-parser/dashboard)
 
+Fork
+==============================
+This is forked by [zamblauskas/scala-csv-parser](https://github.com/zamblauskas/scala-csv-parser).
+This is an idea for a Scala 2.13 implementation with [ZIO](https://zio.dev).
+
 About
 ==============================
 CSV parser library for Scala.
