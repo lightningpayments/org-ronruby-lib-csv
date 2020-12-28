@@ -1,45 +1,21 @@
 package org.ronruby.lib.csv
 
-import cats.implicits._
 import org.ronruby.lib.csv.ColumnBuilder._
 import org.ronruby.lib.csv.ColumnReads._
 import org.ronruby.lib.csv.CsvParser._
 import org.ronruby.lib.csv.Reads._
-import org.scalatest.funspec.AnyFunSpec
+import org.ronruby.lib.csv.errors.FailureThrowable
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.functional.FunctionalBuilder
 import play.api.libs.functional.syntax._
+import zio.Task
 
-class CsvParserSpec extends PlaySpec with AnyFunSpec {
+class CsvParserSpec extends PlaySpec with ScalaFutures {
 
   case class Person(name: String, age: Int, city: Option[String])
 
   "CsvParser" must {
-    "manually defined reads" in {
-      val personReads: ColumnReads[Person] = (
-        column("name").as[String] ~
-        column("age").as[Int] ~
-        column("city").asOpt[String]
-      ) (Person)
-
-      testReads(personReads)
-    }
-  }
-
-  case class Person(name: String, age: Int, city: Option[String])
-
-  describe("manually defined reads") {
-    val personReads: ColumnReads[Person] = (
-      column("name").as[String] and
-        column("age").as[Int] and
-        column("city").asOpt[String]
-      )(Person)
-
-    testReads(personReads)
-  }
-
-  describe("maximum size case class") {
-    it("parse 22 params case class") {
+    "parse 22 params case class" in {
       case class Maximum(
         p1: Int, p2: Int, p3: Int, p4: Int, p5: Int, p6: Int, p7: Int, p8: Int, p9: Int, p10: Int,
         p11: Int, p12: Int, p13: Int, p14: Int, p15: Int, p16: Int, p17: Int, p18: Int, p19: Int,
@@ -52,209 +28,227 @@ class CsvParserSpec extends PlaySpec with AnyFunSpec {
           |1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22
         """.stripMargin
 
-      val columns1 =
-        column("p1").as[Int] ~
-        column("p2").as[Int] ~
-        column("p3").as[Int] ~
-        column("p4").as[Int] ~
-        column("p5").as[Int] ~
-        column("p6").as[Int] ~
-        column("p7").as[Int] ~
-        column("p8").as[Int] ~
-        column("p9").as[Int] ~
-        column("p10").as[Int] ~
-        column("p11").as[Int]
-
-
-      val columns2 =
-        column("p12").as[Int] ~
-        column("p13").as[Int] ~
-        column("p14").as[Int] ~
-        column("p15").as[Int] ~
-        column("p16").as[Int] ~
-        column("p17").as[Int] ~
-        column("p18").as[Int] ~
-        column("p19").as[Int] ~
-        column("p20").as[Int] ~
-        column("p21").as[Int] ~
-        column("p22").as[Int]
-
       implicit val columnReads: ColumnReads[Maximum] = (
-        columns1 ~
-        columns2
-      )(Maximum.apply _)
+        column("p1").as[Int] ~
+          column("p2").as[Int] ~
+          column("p3").as[Int] ~
+          column("p4").as[Int] ~
+          column("p5").as[Int] ~
+          column("p6").as[Int] ~
+          column("p7").as[Int] ~
+          column("p8").as[Int] ~
+          column("p9").as[Int] ~
+          column("p10").as[Int] ~
+          column("p11").as[Int] ~
+          column("p12").as[Int] ~
+          column("p13").as[Int] ~
+          column("p14").as[Int] ~
+          column("p15").as[Int] ~
+          column("p16").as[Int] ~
+          column("p17").as[Int] ~
+          column("p18").as[Int] ~
+          column("p19").as[Int] ~
+          column("p20").as[Int] ~
+          column("p21").as[Int] ~
+          column("p22").as[Int]
+        ) (Maximum.apply _)
 
-      parseWithSeparator[Maximum](csv, ',') mustBe Right(Seq(
+      whenReady(parseWithSeparator[Maximum](csv, ','))(_ mustBe Right(Seq(
         Maximum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)
-      ))
+      )))
     }
   }
 
-  def testReads(implicit cr: ColumnReads[Person]): Unit = {
-    describe("success parsing") {
-      it("empty string") {
-        val csv = ""
-        parseWithSeparator(csv, ',') mustBe Right(Seq.empty[Person])
-        isHeaderValidWithSeparator(csv, ',') mustBe false
-      }
 
-      it("multiple lines") {
-        val csv = """
-                    |name,age,city
-                    |john,33,london
-                    |smith,15,birmingham
+  "CsvPars -- testReads" must {
+    implicit val personReads: ColumnReads[Person] = (
+      column("name").as[String] ~
+        column("age").as[Int] ~
+        column("city").asOpt[String]
+      ) (Person)
+
+    "empty string" in {
+      val csv = ""
+      whenReady(parseWithSeparator(csv, ','))(_ mustBe Right(Seq.empty[Person]))
+      whenReady(isHeaderValidWithSeparator(csv, ','))(_ mustBe Right(false))
+    }
+
+    "multiple lines" in {
+      val csv =
+        """
+          |name,age,city
+          |john,33,london
+          |smith,15,birmingham
                   """.stripMargin
 
-        parseWithSeparator(csv, ',') mustBe Right(Seq(
-          Person("john", 33, Some("london")),
-          Person("smith", 15, Some("birmingham"))
-        ))
-        isHeaderValidWithSeparator(csv, ',') mustBe true
-      }
+      whenReady(parseWithSeparator(csv, ','))(_ mustBe Right(Seq(
+        Person("john", 33, Some("london")),
+        Person("smith", 15, Some("birmingham"))
+      )))
+      whenReady(isHeaderValidWithSeparator(csv, ','))(_ mustBe Right(true))
+    }
 
-      it("inversed columns") {
-        val csv = """
-                    |city,age,name
-                    |london,33,john
+    "inversed columns" in {
+      val csv =
+        """
+          |city,age,name
+          |london,33,john
                   """.stripMargin
 
-        parseWithSeparator(csv, ',') mustBe Right(Seq(
-          Person("john", 33, Some("london"))
-        ))
-        isHeaderValidWithSeparator(csv, ',') mustBe true
-      }
+      whenReady(parseWithSeparator(csv, ','))(_ mustBe Right(Seq(
+        Person("john", 33, Some("london"))
+      )))
+      whenReady(isHeaderValidWithSeparator(csv, ','))(_ mustBe Right(true))
+    }
 
-      it("ignore empty lines") {
-        val csv = """
-                    |name,age,city
-                    |
-                    |john,33,london
-                    |
+    "ignore empty lines" in {
+      val csv =
+        """
+          |name,age,city
+          |
+          |john,33,london
+          |
                   """.stripMargin
 
-        parseWithSeparator(csv, ',') mustBe Right(Seq(
-          Person("john", 33, Some("london"))
-        ))
-        isHeaderValidWithSeparator(csv, ',') mustBe true
-      }
+      whenReady(parseWithSeparator(csv, ','))(_ mustBe Right(Seq(
+        Person("john", 33, Some("london"))
+      )))
+      whenReady(isHeaderValidWithSeparator(csv, ','))(_ mustBe Right(true))
+    }
 
-      it("ignore unused columns") {
-        val csv = """
-                    |name,x,age,city,y
-                    |john,x,33,london,y
+    "ignore unused columns" in {
+      val csv =
+        """
+          |name,x,age,city,y
+          |john,x,33,london,y
                   """.stripMargin
 
-        parseWithSeparator(csv, ',') mustBe Right(Seq(
-          Person("john", 33, Some("london"))
-        ))
-        isHeaderValidWithSeparator(csv, ',') mustBe true
-      }
+      whenReady(parseWithSeparator(csv, ','))(_ mustBe Right(Seq(
+        Person("john", 33, Some("london"))
+      )))
+      whenReady(isHeaderValidWithSeparator(csv, ','))(_ mustBe Right(true))
+    }
 
-      it("optional column does not exist") {
-        val csv = """
-                    |name,age
-                    |john,33
+    "optional column does not exist" in {
+      val csv =
+        """
+          |name,age
+          |john,33
                   """.stripMargin
 
-        parseWithSeparator(csv, ',') mustBe Right(Seq(
-          Person("john", 33, None)
-        ))
-        isHeaderValidWithSeparator(csv, ',') mustBe true
-      }
+      whenReady(parseWithSeparator(csv, ','))(_ mustBe Right(Seq(
+        Person("john", 33, None)
+      )))
+      whenReady(isHeaderValidWithSeparator(csv, ','))(_ mustBe Right(true))
+    }
 
-      it("optional column is empty") {
-        val csv = """
-                    |name,age,city
-                    |john,33,
+    "optional column is empty" in {
+      val csv =
+        """
+          |name,age,city
+          |john,33,
                   """.stripMargin
 
-        parseWithSeparator(csv, ',') mustBe Right(Seq(
-          Person("john", 33, None)
-        ))
-        isHeaderValidWithSeparator(csv, ',') mustBe true
-      }
+      whenReady(parseWithSeparator(csv, ','))(_ mustBe Right(Seq(
+        Person("john", 33, None)
+      )))
+      whenReady(isHeaderValidWithSeparator(csv, ','))(_ mustBe Right(true))
+    }
 
-      it("';' as a separator") {
-        val csv = """
-                    |name;age;city
-                    |john;33;london
+    "';' as a separator" in {
+      val csv =
+        """
+          |name;age;city
+          |john;33;london
                   """.stripMargin
 
-        parseWithSeparator(csv, ';') mustBe Right(Seq(
-          Person("john", 33, Some("london"))
-        ))
-        isHeaderValidWithSeparator(csv, ';') mustBe true
+      whenReady(parseWithSeparator(csv, ';'))(_ mustBe Right(Seq(
+        Person("john", 33, Some("london"))
+      )))
+      whenReady(isHeaderValidWithSeparator(csv, ';'))(_ mustBe Right(true))
+    }
+  }
+
+  "CsvParser#failure parsing" must {
+    implicit val personReads: ColumnReads[Person] = (
+      column("name").as[String] ~
+        column("age").as[Int] ~
+        column("city").asOpt[String]
+      ) (Person)
+
+    "required column does not exist" in {
+      implicit val personReads: ColumnReads[Person] = (
+        column("name").as[String] ~
+          column("age").as[Int] ~
+          column("city").asOpt[String]
+        ) (Person)
+      val csv =
+        """
+          |name,city
+          |john,london
+        """.stripMargin
+
+      whenReady(parseWithSeparator(csv, ',')) {
+        case Left(failure: FailureThrowable) =>
+          failure.lineNum mustBe 0
+          failure.line mustBe "john,london"
+          failure.message mustBe "Column 'age' does not exist."
+          whenReady(isHeaderValidWithSeparator(csv, ','))(_ mustBe Right(false))
+        case Left(_) => fail("Left: required column does not exist")
+        case Right(_) => fail("Right: required column does not exist")
       }
     }
 
-    describe("failure parsing") {
-      it("required column does not exist") {
-        val csv = """
-                    |name,city
-                    |john,london
-                  """.stripMargin
-
-        val result = parse(csv)
-
-        val failure = expectFailure(result)
-        failure.lineNum shouldBe 0
-        failure.line shouldBe "john,london"
-        failure.message should include("age")
-
-        isHeaderValid(csv) shouldBe false
+    "cannot convert column to required type" in {
+      val csv = """
+                  |name,age,city
+                  |john,x,london
+            """.stripMargin
+      whenReady(parseWithSeparator(csv, ',')) {
+        case Left(failure: FailureThrowable) =>
+          failure.lineNum mustBe 0
+          failure.line mustBe "john,x,london"
+          failure.message mustBe "Cannot convert 'x' to 'int' for column 'age'"
+          whenReady(isHeaderValidWithSeparator(csv, ','))(_ mustBe Right(true))
+        case Left(_) => fail("Left: cannot convert column to required type")
+        case Right(_) => fail("Right: cannot convert column to required type")
       }
-
-      it("cannot convert column to required type") {
-        val csv = """
-                    |name,age,city
-                    |john,x,london
-                  """.stripMargin
-
-        val result = parse(csv)
-
-        val failure = expectFailure(result)
-        failure.lineNum shouldBe 0
-        failure.line shouldBe "john,x,london"
-        failure.message should include("age")
-
-        isHeaderValid(csv) shouldBe true
+    }
+    "more than one required column is missing" in {
+      val csv = """
+                  |city
+                  |london
+            """.stripMargin
+      whenReady(parseWithSeparator(csv, ',')) {
+        case Left(failure: FailureThrowable) =>
+          failure.lineNum mustBe 0
+          failure.line mustBe "london"
+          failure.message mustBe "Column 'age' does not exist., Column 'name' does not exist."
+          whenReady(isHeaderValidWithSeparator(csv, ','))(_ mustBe Right(false))
+        case Left(_) => fail("Left: more than one required column is missing")
+        case Right(_) => fail("Right: more than one required column is missing")
       }
-
-      it("more than one required column is missing") {
-        val csv = """
-                    |city
-                    |london
-                  """.stripMargin
-
-        val result = parse(csv)
-
-        val failure = expectFailure(result)
-        failure.lineNum shouldBe 0
-        failure.line shouldBe "london"
-        failure.message should (include("name") and include("age"))
-
-        isHeaderValid(csv) shouldBe false
-      }
-
-      it("failure on second line") {
-        val csv = """
-                    |name,age,city
-                    |john,15,london
-                    |smith
-                  """.stripMargin
-
-        val result = parse(csv)
-
-        val failure = expectFailure(result)
-        failure.lineNum shouldBe 1
-        failure.line shouldBe "smith"
-        failure.message should include("age")
-
-        isHeaderValid(csv) shouldBe true
+    }
+    "failure on second line" in {
+      val csv = """
+                  |name,age,city
+                  |john,15,london
+                  |smith
+            """.stripMargin
+      whenReady(parseWithSeparator(csv, ',')) {
+        case Left(failure: FailureThrowable) =>
+          failure.lineNum mustBe 1
+          failure.line mustBe "smith"
+          failure.message mustBe "Column 'age' does not exist."
+          whenReady(isHeaderValidWithSeparator(csv, ','))(_ mustBe Right(true))
+        case Left(_) => fail("Left: failure on second line")
+        case Right(_) => fail("Right: failure on second line")
       }
     }
   }
 
-  private def expectFailure[A](result: Either[A, _]): A =
-    result.left.getOrElse(fail(s"Expected failure, but got $result"))
+  private def whenReady[T, U](task: => Task[T])(f: Either[Throwable, T] => U): U =
+    whenReady(defaultRuntime.unsafeRunToFuture(task.either))(f)
+
+  private val defaultRuntime: zio.Runtime[zio.ZEnv] = zio.Runtime.default
 }

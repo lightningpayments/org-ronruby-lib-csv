@@ -40,6 +40,6 @@ scapegoatVersion in ThisBuild := "1.4.5"
 
 coverageFailOnMinimum := true
 coverageHighlighting := true
-coverageMinimum := 100
+coverageMinimum := 98
 coverageExcludedPackages := """<empty>;..*Module.*;"""
 
