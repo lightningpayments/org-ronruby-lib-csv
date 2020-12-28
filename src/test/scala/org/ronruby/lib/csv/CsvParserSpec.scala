@@ -247,6 +247,39 @@ class CsvParserSpec extends PlaySpec with ScalaFutures {
     }
   }
 
+  "CsvParser#write" must {
+    "return a csv of persons" in {
+      val persons = List(
+        Person("peter", 31, Some("ScalaCity")),
+        Person("peter", 31, Some("ScalaCity")),
+        Person("peter", 31, Some("ScalaCity")),
+        Person("peter", 31, Some("ScalaCity")),
+        Person("peter", 31, Some("ScalaCity")),
+        Person("peter", 31, Some("ScalaCity")),
+        Person("peter", 31, Some("ScalaCity")),
+        Person("peter", 31, Some("ScalaCity")),
+        Person("peter", 31, Some("ScalaCity")),
+        Person("peter", 31, Some("ScalaCity"))
+      )
+      val personsCsv =
+        """
+          |name|age|city
+          |host|31|ScalaCity
+          |host|31|ScalaCity
+          |host|31|ScalaCity
+          |host|31|ScalaCity
+          |host|31|ScalaCity
+          |host|31|ScalaCity
+          |host|31|ScalaCity
+          |host|31|ScalaCity
+          |host|31|ScalaCity
+          |host|31|ScalaCity
+          |""".stripMargin
+      val header = "id" :: "produktId" :: "name" :: "beschreibung" :: "preis" :: "bestand" :: Nil
+      CsvParser.write[Person](header, '|', persons) _ mustBe Right(personsCsv.trim)
+    }
+  }
+
   private def whenReady[T, U](task: => Task[T])(f: Either[Throwable, T] => U): U =
     whenReady(defaultRuntime.unsafeRunToFuture(task.either))(f)
 
