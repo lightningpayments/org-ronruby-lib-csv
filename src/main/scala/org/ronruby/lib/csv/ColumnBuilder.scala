@@ -1,7 +1,7 @@
 package org.ronruby.lib.csv
 
 import cats.implicits._
-import ReadResult.{ReadFailure, ReadSuccess}
+import org.ronruby.lib.csv.ReadResult.{ReadFailure, ReadSuccess}
 
 final case class ColumnBuilder(name: String) extends AnyVal
 
@@ -28,7 +28,5 @@ object ColumnBuilder {
   }
 
   def column(name: String): ColumnBuilder = ColumnBuilder(name)
-
-  def from(name: String): ColumnBuilder = column(name)
 
 }

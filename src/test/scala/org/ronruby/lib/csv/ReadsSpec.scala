@@ -1,11 +1,10 @@
 package org.ronruby.lib.csv
 
-import org.mockito.scalatest.IdiomaticMockito
 import org.ronruby.lib.csv.ReadResult.{ReadFailure, ReadSuccess}
 import org.ronruby.lib.csv.Reads._
 import org.scalatestplus.play.PlaySpec
 
-class ReadsSpec extends PlaySpec with IdiomaticMockito {
+class ReadsSpec extends PlaySpec {
 
   "default Reads" must {
     "read String" in {
