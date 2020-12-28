@@ -262,21 +262,19 @@ class CsvParserSpec extends PlaySpec with ScalaFutures {
         Person("peter", 31, Some("ScalaCity"))
       )
       val personsCsv =
-        """
-          |name|age|city
-          |host|31|ScalaCity
-          |host|31|ScalaCity
-          |host|31|ScalaCity
-          |host|31|ScalaCity
-          |host|31|ScalaCity
-          |host|31|ScalaCity
-          |host|31|ScalaCity
-          |host|31|ScalaCity
-          |host|31|ScalaCity
-          |host|31|ScalaCity
-          |""".stripMargin
-      val header = "id" :: "produktId" :: "name" :: "beschreibung" :: "preis" :: "bestand" :: Nil
-      CsvParser.write[Person](header, '|', persons) _ mustBe Right(personsCsv.trim)
+        """|name|age|city
+          |peter|31|ScalaCity
+          |peter|31|ScalaCity
+          |peter|31|ScalaCity
+          |peter|31|ScalaCity
+          |peter|31|ScalaCity
+          |peter|31|ScalaCity
+          |peter|31|ScalaCity
+          |peter|31|ScalaCity
+          |peter|31|ScalaCity
+          |peter|31|ScalaCity""".stripMargin
+      val header = "name" :: "age" :: "city" :: Nil
+      CsvParser.write[Person](header, '|', persons) mustBe personsCsv.trim
     }
   }
 
