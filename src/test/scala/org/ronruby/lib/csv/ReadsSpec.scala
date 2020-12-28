@@ -15,6 +15,11 @@ class ReadsSpec extends PlaySpec {
       read[Int]("1.0") mustBe a[ReadFailure]
       read[Int]("not an Int") mustBe a[ReadFailure]
     }
+    "read Long" in {
+      read[Long]("1") mustBe ReadSuccess(1)
+      read[Long]("1.0") mustBe a[ReadFailure]
+      read[Long]("not an Int") mustBe a[ReadFailure]
+    }
     "read Float" in {
       read[Float]("1") mustBe ReadSuccess(1f)
       read[Float]("1.0") mustBe ReadSuccess(1f)
