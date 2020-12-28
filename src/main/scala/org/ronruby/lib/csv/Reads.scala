@@ -19,6 +19,10 @@ object Reads {
 
   implicit val floatReads: Reads[Float] = tryRead(_.toFloat)
 
+  implicit val doubleReads: Reads[Double] = tryRead(_.toDouble)
+
+  implicit val booleanReads: Reads[Boolean] = tryRead(_.toBoolean)
+
   private def tryRead[T: ClassTag](f: String => T): Reads[T] = (column: Column) =>
     Try(ReadSuccess(f(column.value))).toOption match {
       case Some(success) => success
