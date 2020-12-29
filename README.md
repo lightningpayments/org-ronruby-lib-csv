@@ -5,8 +5,8 @@
 
 Fork
 ==============================
-This is forked by [zamblauskas/scala-csv-parser](https://github.com/zamblauskas/scala-csv-parser).
-This is an idea for a Scala 2.13 implementation with [ZIO](https://zio.dev).
+The code is forked by [zamblauskas/scala-csv-parser](https://github.com/zamblauskas/scala-csv-parser).
+This is an idea for a Scala 2.13 implementation with [ZIO](https://zio.dev)s Task type.
 
 About
 ==============================
