@@ -3,6 +3,10 @@
 [![Codacy Grade Badge](https://api.codacy.com/project/badge/Grade/7a2742cce08742939453f5cf86b1f1a9)](https://www.codacy.com/app/zamblauskas/scala-csv-parser/dashboard)
 <!--[![Codacy Coverage Badge](https://api.codacy.com/project/badge/Coverage/7a2742cce08742939453f5cf86b1f1a9)](https://www.codacy.com/app/zamblauskas/scala-csv-parser/dashboard)-->
 
+Improvements
+==============================
+Using Akka Streams to increase performance is in progress.
+
 Fork
 ==============================
 The code is forked by [zamblauskas/scala-csv-parser](https://github.com/zamblauskas/scala-csv-parser).
