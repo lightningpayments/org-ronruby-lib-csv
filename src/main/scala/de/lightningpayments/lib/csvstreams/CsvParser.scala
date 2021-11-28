@@ -3,15 +3,17 @@ package de.lightningpayments.lib.csvstreams
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Encoder, SparkSession}
 
+import scala.reflect.ClassTag
+
 trait CsvParser {
 
   private final val DELIMITER_KEY = "delimiter"
   private final val HEADER_KEY = "header"
 
-  def parse[T](
+  def parse[T: ClassTag](
     path: String,
     delimiter: String = ";",
-    header: String = "false")(
+    header: Boolean = false)(
     implicit sparkSession: SparkSession,
     encoder: Encoder[T],
     cr: ColumnReads[T]
@@ -26,7 +28,7 @@ trait CsvParser {
         case ReadResult.ReadSuccess(t) => sparkSession.createDataset(Seq(t)).rdd
         case ReadResult.ReadFailure(_) => sparkSession.emptyDataset[T].rdd
       })
-      .flatMap(_.toLocalIterator)
+      .flatMap[T](_.toLocalIterator)
 
 }
 
