@@ -10,7 +10,7 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatestplus.play.PlaySpec
 import org.slf4j.LoggerFactory
 import zio.Task
-import scala.concurrent.ExecutionContext
+
 import scala.util.Try
 
 class TestSpec extends PlaySpec with MockitoSugar with ScalaFutures with BeforeAndAfterEach with BeforeAndAfterAll {
@@ -27,17 +27,7 @@ class TestSpec extends PlaySpec with MockitoSugar with ScalaFutures with BeforeA
    */
   protected val futurePatienceInterval: Int = 15
 
-  /**
-   * The execution context used in unit tests.
-   */
-  implicit val defaultExecutionContext: ExecutionContext = ExecutionContext.Implicits.global
-
   implicit val outerScope: Unit = org.apache.spark.sql.catalyst.encoders.OuterScopes.addOuterScope(this)
-
-  /**
-   * Runtime default used only in unit tests.
-   */
-  implicit val zioRuntime: zio.Runtime[zio.ZEnv] = zio.Runtime.default
 
   /**
    * To prevent tests to fail because of future timeout issues, we override the default behavior.
@@ -70,6 +60,6 @@ class TestSpec extends PlaySpec with MockitoSugar with ScalaFutures with BeforeA
     }
   }
 
-  def whenReady[T, U](io: Task[T])(f: Either[Throwable, T] => U): U = zioRuntime.unsafeRun(io.either.map(f))
+  def whenReady[T, U](io: => Task[T])(f: Either[Throwable, T] => U): U = zio.Runtime.default.unsafeRun(io.either.map(f))
 
 }

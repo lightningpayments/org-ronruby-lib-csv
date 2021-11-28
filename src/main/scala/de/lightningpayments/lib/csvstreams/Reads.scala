@@ -5,7 +5,7 @@ import de.lightningpayments.lib.csvstreams.ReadResult._
 import scala.util.Try
 
 trait Reads[T] {
-def read(value: String): ReadResult[T]
+  def read(value: String): ReadResult[T]
 }
 
 object Reads {
@@ -22,12 +22,12 @@ object Reads {
 
   implicit val booleanReads: Reads[Boolean] = tryRead(_.toBoolean)
 
-  implicit def csvReads[T: Parser]: Reads[T] = {
-    value => implicitly[Parser[T]].parse(value) match {
-      case Right(t) => ReadSuccess(t)
-      case Left(err) => ReadFailure(err)
-    }
-  }
+  implicit def csvReads[T: Parser]: Reads[T] =
+    value =>
+      implicitly[Parser[T]].parse(value) match {
+        case Right(t) => ReadSuccess(t)
+        case Left(err) => ReadFailure(err)
+      }
 
   private def tryRead[T](f: String => T): Reads[T] = (value: String) =>
     Try(ReadSuccess(f(value))).toOption match {
