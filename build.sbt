@@ -20,6 +20,7 @@ testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oSD")
 
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-guice" % "2.8.2",
+  "com.lightbend.akka" %% "akka-stream-alpakka-csv" % "2.0.2",
   "org.typelevel" %% "cats-core" % "2.1.1",
   "org.typelevel" %% "cats-kernel-laws" % "2.1.1" % "test",
   "org.typelevel" %% "cats-laws" % "2.1.1" % "test",
