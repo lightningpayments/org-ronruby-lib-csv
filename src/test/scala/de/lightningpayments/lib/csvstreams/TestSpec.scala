@@ -9,13 +9,11 @@ import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatestplus.play.PlaySpec
 import org.slf4j.LoggerFactory
-
+import zio.Task
 import scala.concurrent.ExecutionContext
 import scala.util.Try
 
 class TestSpec extends PlaySpec with MockitoSugar with ScalaFutures with BeforeAndAfterEach with BeforeAndAfterAll {
-
-  import zio.Task
 
   /**
    * The timeout to wait for the future before declaring it as failed.
