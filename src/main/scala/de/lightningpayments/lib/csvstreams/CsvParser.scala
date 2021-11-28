@@ -5,7 +5,7 @@ import org.apache.spark.sql.{Encoder, SparkSession}
 
 import scala.reflect.ClassTag
 
-trait CsvParser {
+object CsvParser {
 
   private final val DELIMITER_KEY = "delimiter"
   private final val HEADER_KEY = "header"
@@ -31,5 +31,3 @@ trait CsvParser {
       .flatMap[T](_.toLocalIterator)
 
 }
-
-object CsvParser extends CsvParser

@@ -32,6 +32,8 @@ class TestSpec extends PlaySpec with MockitoSugar with ScalaFutures with BeforeA
    */
   implicit val defaultExecutionContext: ExecutionContext = ExecutionContext.Implicits.global
 
+  implicit val outerScope: Unit = org.apache.spark.sql.catalyst.encoders.OuterScopes.addOuterScope(this)
+
   /**
    * Runtime default used only in unit tests.
    */

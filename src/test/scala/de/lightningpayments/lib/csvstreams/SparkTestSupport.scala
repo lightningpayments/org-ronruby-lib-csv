@@ -7,8 +7,8 @@ import java.util.UUID
 
 trait SparkTestSupport {
 
-  protected val appName: String = s"app_${UUID.randomUUID().toString}"
-  protected val master: String = "local[*]"
+  private val appName: String = s"app_${UUID.randomUUID().toString}"
+  private val master: String = "local[*]"
 
   private val spark: SparkSession = {
     val config = new SparkConf()

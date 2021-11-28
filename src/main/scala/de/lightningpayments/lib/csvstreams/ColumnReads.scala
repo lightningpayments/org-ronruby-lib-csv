@@ -21,14 +21,17 @@ object ColumnReads {
     }
 
   implicit val columnReadsApplicative: Applicative[ColumnReads] = new Applicative[ColumnReads] {
-    override def apply[A, B](f: ColumnReads[A => B], fa: ColumnReads[A]): ColumnReads[B] = line =>
-      (fa.read(line), f.read(line)) match {
-        case (ReadSuccess(a), ReadSuccess(f)) => ReadSuccess(f(a))
+    override def pure[A](a: => A): ColumnReads[A] = _ => ReadSuccess(a)
+
+    override def map[A, B](m: ColumnReads[A], f: A => B): ColumnReads[B] = this.apply(pure(f), m)
+
+    override def apply[A, B](ffa: ColumnReads[A => B], fa: ColumnReads[A]): ColumnReads[B] = (row: Row) =>
+      (fa.read(row), ffa.read(row)) match {
+        case (ReadSuccess(a), ReadSuccess(f)) => ReadSuccess[B](f(a))
         case (f: ReadFailure, _) => f
         case (_, f: ReadFailure) => f
       }
-    override def pure[A](a: => A): ColumnReads[A] = _ => ReadSuccess(a)
-    override def map[A, B](m: ColumnReads[A], f: A => B): ColumnReads[B] = this.apply(pure(f), m)
+
   }
 
 }

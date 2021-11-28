@@ -2,20 +2,23 @@ package de.lightningpayments.lib.csvstreams
 
 import de.lightningpayments.lib.csvstreams.ColumnBuilder._
 import de.lightningpayments.lib.csvstreams.ColumnReads._
-import de.lightningpayments.lib.csvstreams.ReadResult._
 import de.lightningpayments.lib.csvstreams.Reads._
-import org.apache.spark.sql.{Encoder, Encoders, SparkSession}
+import org.apache.spark.sql.{Encoder, Encoders}
 import play.api.libs.functional.syntax._
-import zio.{Task, ZIO}
+import zio.ZIO
 
 import java.nio.file.Paths
-import scala.io.Source
 
-class CsvParserSpec extends TestSpec with SparkTestSupport {
+class CsvParserSpec extends TestSpec with SparkTestSupport { self =>
 
   case class Person(name: String, age: Int, city: Option[String])
   object Person {
-    implicit val personEncoder: Encoder[Person] = Encoders.product
+    implicit val personEncoder: Encoder[Person] = Encoders.product[Person]
+    implicit val personReads: ColumnReads[Person] = (
+      column(0).as[String] ~
+        column(1).as[Int] ~
+        column(2).asOpt[String]
+      ) (Person.apply _)
   }
 
   case class Maximum(
@@ -24,15 +27,9 @@ class CsvParserSpec extends TestSpec with SparkTestSupport {
       p20: Int, p21: Int, p22: Int
   )
   object Maximum {
-    implicit val maximumEncoder: Encoder[Maximum] = Encoders.product
-  }
-
-  "CsvParser#parseStream" must {
-    "parse 22 params case class" in withSparkSession { implicit spark =>
-      import Maximum._
-
-      implicit val columnReads: ColumnReads[Maximum] = (
-        column(0).as[Int] ~
+    implicit val maximumEncoder: Encoder[Maximum] = Encoders.product[Maximum]
+    implicit val columnReads: ColumnReads[Maximum] = (
+      column(0).as[Int] ~
         column(1).as[Int] ~
         column(2).as[Int] ~
         column(3).as[Int] ~
@@ -55,28 +52,22 @@ class CsvParserSpec extends TestSpec with SparkTestSupport {
         column(20).as[Int] ~
         column(21).as[Int]
       ) (Maximum.apply _)
+  }
 
-      val path = Paths.get("maximum.csv").toString
-      val io = ZIO(CsvParser.parse(path = path, delimiter = ",", header = true).collect().toList)
+  "CsvParser#parse" must {
+    "parse 22 params case class" in withSparkSession { implicit spark =>
+      val path = Paths.get(self.getClass.getResource("/csv/maximum.csv").getPath)
+      val io = ZIO(CsvParser.parse[Maximum](path = path.toString, delimiter = ",", header = true).collect().toList)
       whenReady(io)(_ mustBe Right(Seq(
         Maximum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)
       )))
     }
   }
 
-  "CsvParser#parseStream(testReads)" must {
-
-    implicit val personReads: ColumnReads[Person] = (
-      column(0).as[String] ~
-      column(1).as[Int] ~
-      column(2).asOpt[String]
-    ) (Person.apply _)
-
+  "CsvParser#parse(testReads)" must {
     "empty string" in withSparkSession { implicit spark =>
-      import Person._
-
-      val path = Paths.get("empty.csv").toString
-      val io = ZIO(CsvParser.parse(path = path, delimiter = ",", header = true).collect().toList)
+      val path = Paths.get(self.getClass.getResource("/csv/empty.csv").getPath)
+      val io = ZIO(CsvParser.parse[Person](path = path.toString, delimiter = ",", header = true).collect().toList)
       whenReady(io)(_ mustBe Right(Nil))
     }
     // "multiple lines" in {
