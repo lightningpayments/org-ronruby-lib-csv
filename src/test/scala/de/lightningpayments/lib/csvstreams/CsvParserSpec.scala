@@ -19,8 +19,8 @@ class CsvParserSpec extends TestSpec with ActorSpec {
   private def programParseStream[T: ColumnReads](
     path: String)(
     implicit sparkSession: SparkSession,
-    encoder: Encoder[ReadResult[T]]
-  ) =
+    encoder: Encoder[T]
+  ): Task[List[T]] =
     ZIO(CsvParser.parse[T](path = path).collect().toList)
 
   "CsvParser#parseStream" must {
