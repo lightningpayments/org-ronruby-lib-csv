@@ -1,8 +1,10 @@
 package org.ronruby.lib.csv
 
+import cats.Functor
 import cats.implicits._
-import cats.{Functor, SemigroupK}
 
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDateTime, ZonedDateTime}
 import java.util.UUID
 import scala.util.Try
 
@@ -21,13 +23,19 @@ object Parse {
     override def map[A, B](fa: Parse[A])(f: A => B): Parse[B] = fa.parse(_).map(f(_))
   }
 
-  implicit val semigroupK: SemigroupK[Parse] = new SemigroupK[Parse] {
-    override def combineK[A](x: Parse[A], y: Parse[A]): Parse[A] = s => x.parse(s) <+> y.parse(s)
-  }
-
   def parse[T: Parse](s: String): Either[String, T] = implicitly[Parse[T]].parse(s)
 
   def uuidParse: Parse[UUID] = uuid => Try(UUID.fromString(uuid)).fold(_ => Left("parse.expected.uuid"), Right(_))
+
+  def zonedDateTimeParser(formatter: DateTimeFormatter): Parse[ZonedDateTime] = o =>
+    Either
+      .fromTry(Try(formatter.parse(o)).map(ZonedDateTime.from))
+      .leftMap(_ => "parse.expected.zoneddatetime")
+
+  def localDateTimeParser(formatter: DateTimeFormatter): Parse[LocalDateTime] = o =>
+    Either
+      .fromTry(Try(formatter.parse(o)).map(LocalDateTime.from))
+      .leftMap(_ => "parse.expected.localdatetime")
 
   def intParse: Parse[Int] = {
     case intAndLongPattern(s) => Try(s.toInt).toEither.leftMap(_ => "parse.expected.int")
@@ -42,7 +50,8 @@ object Parse {
   def floatParse: Parse[Float] = {
     case floatPattern(s, _) =>
       Right(s.toFloat).flatMap(n => Either.cond(test = !n.isInfinite, right = n, left = "parse.expected.float"))
-    case _ => Left("parse.expected.float")
+    case _ =>
+      Left("parse.expected.float")
   }
 
   def stringParse: Parse[String] = Right(_)
