@@ -47,11 +47,11 @@ class ReadsSpec extends PlaySpec {
 
   "Parse#csvReads" must {
     "return - expected.string error by int value" in {
-      implicit val parse: Parse[Int] = x => Try(x.toDouble.toInt).fold(_ => Left("derp"), Right(_))
+      implicit val parse: Parser[Int] = x => Try(x.toDouble.toInt).fold(_ => Left("derp"), Right(_))
       read[Int]("123")(csvReads) mustBe ReadSuccess(123)
     }
     "return - custom error when condition is false" in {
-      implicit val parse: Parse[Int] = x => Try(x.toInt).fold(_ => Left("custom error"), Right(_))
+      implicit val parse: Parser[Int] = x => Try(x.toInt).fold(_ => Left("custom error"), Right(_))
       read[Int]("123A")(csvReads) mustBe ReadFailure("custom error")
     }
   }

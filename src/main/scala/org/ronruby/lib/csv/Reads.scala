@@ -22,8 +22,8 @@ object Reads {
 
   implicit val booleanReads: Reads[Boolean] = tryRead(_.toBoolean)
 
-  implicit def csvReads[T: Parse]: Reads[T] = {
-    value => implicitly[Parse[T]].parse(value) match {
+  implicit def csvReads[T: Parser]: Reads[T] = {
+    value => implicitly[Parser[T]].parse(value) match {
       case Right(t) => ReadSuccess(t)
       case Left(err) => ReadFailure(err)
     }

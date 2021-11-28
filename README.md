@@ -5,7 +5,7 @@
 
 Improvements
 ==============================
-Using Akka Streams to increase performance is in progress.
+CsvParser works with Akka Streams to increase the performance.
 
 Fork
 ==============================
