@@ -1,10 +1,10 @@
-package org.ronruby.lib.csv
+package de.lightningpayments.lib.csvstreams
 
 import akka.stream.alpakka.csv.scaladsl.CsvParsing
 import akka.stream.alpakka.csv.scaladsl.CsvParsing.DoubleQuote
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import org.ronruby.lib.csv.ReadResult.{ReadFailure, ReadSuccess}
+import de.lightningpayments.lib.csvstreams.ReadResult.{ReadFailure, ReadSuccess}
 import play.api.Logging
 
 trait CsvParser extends Logging {

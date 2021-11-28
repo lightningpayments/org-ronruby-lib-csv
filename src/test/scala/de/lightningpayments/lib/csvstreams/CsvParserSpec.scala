@@ -1,13 +1,13 @@
-package org.ronruby.lib.csv
+package de.lightningpayments.lib.csvstreams
 
 import akka.NotUsed
 import akka.stream.alpakka.csv.scaladsl.CsvParsing
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
-import org.ronruby.lib.csv.ColumnBuilder._
-import org.ronruby.lib.csv.ColumnReads._
-import org.ronruby.lib.csv.ReadResult._
-import org.ronruby.lib.csv.Reads._
+import de.lightningpayments.lib.csvstreams.ColumnBuilder._
+import de.lightningpayments.lib.csvstreams.ColumnReads._
+import de.lightningpayments.lib.csvstreams.ReadResult._
+import de.lightningpayments.lib.csvstreams.Reads._
 import play.api.libs.functional.syntax._
 import zio.Task
 

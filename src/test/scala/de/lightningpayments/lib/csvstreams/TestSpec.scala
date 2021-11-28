@@ -1,4 +1,4 @@
-package org.ronruby.lib.csv
+package de.lightningpayments.lib.csvstreams
 
 import ch.qos.logback.classic.LoggerContext
 import org.mockito.Mockito

@@ -1,7 +1,7 @@
-package org.ronruby.lib.csv
+package de.lightningpayments.lib.csvstreams
 
-import org.ronruby.lib.csv.ReadResult._
-import org.ronruby.lib.csv.Reads.{csvReads, _}
+import de.lightningpayments.lib.csvstreams.ReadResult._
+import de.lightningpayments.lib.csvstreams.Reads.{csvReads, _}
 import org.scalatestplus.play.PlaySpec
 
 import scala.util.Try

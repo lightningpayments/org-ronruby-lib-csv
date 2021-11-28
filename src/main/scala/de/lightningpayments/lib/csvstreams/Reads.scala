@@ -1,6 +1,6 @@
-package org.ronruby.lib.csv
+package de.lightningpayments.lib.csvstreams
 
-import org.ronruby.lib.csv.ReadResult._
+import de.lightningpayments.lib.csvstreams.ReadResult._
 
 import scala.util.Try
 

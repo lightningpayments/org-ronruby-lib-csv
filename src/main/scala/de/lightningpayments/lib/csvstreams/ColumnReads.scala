@@ -1,6 +1,6 @@
-package org.ronruby.lib.csv
+package de.lightningpayments.lib.csvstreams
 
-import org.ronruby.lib.csv.ReadResult.{ReadFailure, ReadSuccess}
+import de.lightningpayments.lib.csvstreams.ReadResult.{ReadFailure, ReadSuccess}
 import play.api.libs.functional.{Applicative, FunctionalCanBuild, Functor, ~}
 
 trait ColumnReads[T] {

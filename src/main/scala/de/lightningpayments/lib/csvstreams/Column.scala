@@ -1,3 +1,3 @@
-package org.ronruby.lib.csv
+package de.lightningpayments.lib.csvstreams
 
 final case class Column(index: Int, value: String)

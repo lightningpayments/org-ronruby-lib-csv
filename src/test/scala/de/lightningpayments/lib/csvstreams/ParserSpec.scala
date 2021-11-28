@@ -1,4 +1,4 @@
-package org.ronruby.lib.csv
+package de.lightningpayments.lib.csvstreams
 
 import cats.Show
 import cats.implicits._

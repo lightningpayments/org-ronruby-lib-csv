@@ -1,7 +1,7 @@
-package org.ronruby.lib.csv
+package de.lightningpayments.lib.csvstreams
 
 import cats.implicits._
-import org.ronruby.lib.csv.ReadResult._
+import de.lightningpayments.lib.csvstreams.ReadResult._
 import org.scalatestplus.play.PlaySpec
 
 class ColumnBuilderSpec extends PlaySpec {
