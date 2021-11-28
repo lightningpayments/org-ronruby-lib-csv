@@ -1,8 +1,10 @@
-package org.ronruby.lib.csv
+package de.lightningpayments.lib.csvstreams
 
-import org.ronruby.lib.csv.ReadResult.{ReadFailure, ReadSuccess}
-import org.ronruby.lib.csv.Reads._
+import de.lightningpayments.lib.csvstreams.ReadResult._
+import de.lightningpayments.lib.csvstreams.Reads.{csvReads, _}
 import org.scalatestplus.play.PlaySpec
+
+import scala.util.Try
 
 class ReadsSpec extends PlaySpec {
 
@@ -43,6 +45,17 @@ class ReadsSpec extends PlaySpec {
     }
   }
 
-  def read[T](value: String)(implicit r: Reads[T]): ReadResult[T] = r.read(Column("test", value))
+  "Parse#csvReads" must {
+    "return - expected.string error by int value" in {
+      implicit val parse: Parser[Int] = x => Try(x.toDouble.toInt).fold(_ => Left("derp"), Right(_))
+      read[Int]("123")(csvReads) mustBe ReadSuccess(123)
+    }
+    "return - custom error when condition is false" in {
+      implicit val parse: Parser[Int] = x => Try(x.toInt).fold(_ => Left("custom error"), Right(_))
+      read[Int]("123A")(csvReads) mustBe ReadFailure("custom error")
+    }
+  }
+
+  def read[T](value: String)(implicit r: Reads[T]): ReadResult[T] = r.read(value)
 
 }
