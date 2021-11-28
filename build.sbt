@@ -42,3 +42,8 @@ coverageHighlighting := true
 coverageMinimum := 100
 coverageExcludedPackages := """<empty>;..*Module.*;"""
 
+// -------------------------------------------------------------------------------------------------
+// Scalastyle Configuration (check style)
+// -------------------------------------------------------------------------------------------------
+scalastyleFailOnError := true
+
