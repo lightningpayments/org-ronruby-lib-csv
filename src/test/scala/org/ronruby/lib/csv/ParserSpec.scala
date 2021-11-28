@@ -5,7 +5,6 @@ import cats.implicits._
 import org.scalacheck.Prop._
 import org.scalacheck.{Gen, Prop}
 import org.scalatestplus.scalacheck.Checkers
-import play.api.libs.json._
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
