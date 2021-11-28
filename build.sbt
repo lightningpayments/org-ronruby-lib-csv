@@ -1,8 +1,9 @@
 
 name := "Csv Lib"
-organization := "org.ronruby"
+organization := "de.lightningpayments"
 organizationHomepage := None
-version := "0.1"
+organizationName := "lightningpayments"
+version := "0.1.0"
 
 lazy val root = project in file(".")
 
@@ -20,13 +21,11 @@ testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oSD")
 
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-guice" % "2.8.2",
-  "org.typelevel" %% "cats-core" % "2.1.1",
-  "org.typelevel" %% "cats-kernel-laws" % "2.1.1" % "test",
-  "org.typelevel" %% "cats-laws" % "2.1.1" % "test",
-  "org.typelevel" %% "discipline-core" % "1.0.2" % "test",
-  "dev.zio" %% "zio-interop-cats" % "2.1.4.0",
-  "dev.zio" %% "zio" % "1.0.0",
-  "au.com.bytecode" % "opencsv" % "2.4",
+  "com.lightbend.akka" %% "akka-stream-alpakka-csv" % "2.0.2",
+  "org.typelevel" %% "cats-core" % "2.6.1",
+  "org.typelevel" %% "cats-effect" % "2.5.1",
+  "dev.zio" %% "zio-interop-cats" % "2.5.1.0",
+  "dev.zio" %% "zio" % "1.0.12",
   "ch.qos.logback" % "logback-classic" % "1.2.3" % "test",
   "org.mockito" %% "mockito-scala-scalatest" % "1.14.8" % "test",
   "org.mockito" % "mockito-inline" % "3.3.3" % "test",
@@ -42,4 +41,9 @@ coverageFailOnMinimum := true
 coverageHighlighting := true
 coverageMinimum := 100
 coverageExcludedPackages := """<empty>;..*Module.*;"""
+
+// -------------------------------------------------------------------------------------------------
+// Scalastyle Configuration (check style)
+// -------------------------------------------------------------------------------------------------
+scalastyleFailOnError := true
 
