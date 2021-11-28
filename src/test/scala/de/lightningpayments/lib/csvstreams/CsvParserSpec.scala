@@ -8,23 +8,20 @@ import de.lightningpayments.lib.csvstreams.ColumnBuilder._
 import de.lightningpayments.lib.csvstreams.ColumnReads._
 import de.lightningpayments.lib.csvstreams.ReadResult._
 import de.lightningpayments.lib.csvstreams.Reads._
+import org.apache.spark.sql.{Encoder, SparkSession}
 import play.api.libs.functional.syntax._
-import zio.Task
+import zio.{Task, ZIO}
 
 class CsvParserSpec extends TestSpec with ActorSpec {
 
   case class Person(name: String, age: Int, city: Option[String])
 
   private def programParseStream[T: ColumnReads](
-    source: Source[ByteString, _],
-    separator: Byte,
-    dropLeadingLines: Int = 1
-  ): Task[Seq[T]] =
-    Task.fromFuture(_ =>
-      CsvParser
-        .parseStream[T](csv = source, separator = separator, dropLeadingLines)
-        .runWith(Sink.seq)
-    )
+    path: String)(
+    implicit sparkSession: SparkSession,
+    encoder: Encoder[ReadResult[T]]
+  ) =
+    ZIO(CsvParser.parse[T](path = path).collect().toList)
 
   "CsvParser#parseStream" must {
     "parse 22 params case class" in {

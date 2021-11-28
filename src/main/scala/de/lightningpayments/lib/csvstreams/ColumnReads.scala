@@ -1,10 +1,11 @@
 package de.lightningpayments.lib.csvstreams
 
 import de.lightningpayments.lib.csvstreams.ReadResult.{ReadFailure, ReadSuccess}
+import org.apache.spark.sql.Row
 import play.api.libs.functional.{Applicative, FunctionalCanBuild, Functor, ~}
 
 trait ColumnReads[T] {
-  def read(line: IndexedSeq[String]): ReadResult[T]
+  def read(line: Row): ReadResult[T]
 }
 
 object ColumnReads {
@@ -20,7 +21,7 @@ object ColumnReads {
     }
 
   implicit val columnReadsApplicative: Applicative[ColumnReads] = new Applicative[ColumnReads] {
-    override def apply[A, B](f: ColumnReads[A => B], fa: ColumnReads[A]): ColumnReads[B] = (line: IndexedSeq[String]) =>
+    override def apply[A, B](f: ColumnReads[A => B], fa: ColumnReads[A]): ColumnReads[B] = line =>
       (fa.read(line), f.read(line)) match {
         case (ReadSuccess(a), ReadSuccess(f)) => ReadSuccess(f(a))
         case (f: ReadFailure, _) => f

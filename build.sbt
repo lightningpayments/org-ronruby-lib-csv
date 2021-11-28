@@ -15,9 +15,11 @@ Compile / scalacOptions ++= {
     case _ => Seq.empty
   }
 }
-crossScalaVersions := Seq("2.13.3")
+crossScalaVersions := Seq("2.12.10")
 scalaVersion := crossScalaVersions.value.head
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oSD")
+
+val sparkVers = "3.1.2"
 
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-guice" % "2.8.2",
@@ -26,6 +28,8 @@ libraryDependencies ++= Seq(
   "org.typelevel" %% "cats-effect" % "2.5.1",
   "dev.zio" %% "zio-interop-cats" % "2.5.1.0",
   "dev.zio" %% "zio" % "1.0.12",
+  "org.apache.spark" %% "spark-core" % sparkVers % "compile",
+  "org.apache.spark" %% "spark-sql" % sparkVers % "compile",
   "ch.qos.logback" % "logback-classic" % "1.2.3" % "test",
   "org.mockito" %% "mockito-scala-scalatest" % "1.14.8" % "test",
   "org.mockito" % "mockito-inline" % "3.3.3" % "test",
