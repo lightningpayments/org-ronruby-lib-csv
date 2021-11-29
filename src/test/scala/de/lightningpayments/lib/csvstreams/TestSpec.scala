@@ -1,7 +1,6 @@
 package de.lightningpayments.lib.csvstreams
 
 import ch.qos.logback.classic.LoggerContext
-import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterEach, OptionValues}
@@ -14,7 +13,6 @@ class TestSpec
   extends AnyWordSpec
   with Matchers
   with OptionValues
-  with ScalaFutures
   with BeforeAndAfterEach {
 
   implicit val outerScope: Unit = org.apache.spark.sql.catalyst.encoders.OuterScopes.addOuterScope(this)

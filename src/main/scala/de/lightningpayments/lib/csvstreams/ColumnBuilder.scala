@@ -10,13 +10,13 @@ final case class ColumnBuilder(index: Int) extends AnyVal
 object ColumnBuilder {
 
   implicit class RichColumnBuilder(columnBuilder: ColumnBuilder) extends Serializable {
-    def as[T](implicit r: Reads[T]): ColumnReads[T] = line =>
-      Try(line.getString(columnBuilder.index))
+    def as[T](implicit r: Reads[T]): ColumnReads[T] = row =>
+      Try(row.getString(columnBuilder.index))
         .map(r.read)
         .getOrElse(ReadFailure(s"Column ${columnBuilder.index} does not exist."))
 
-    def asOpt[T](implicit r: Reads[T]): ColumnReads[Option[T]] = line =>
-      Try(line.getString(columnBuilder.index))
+    def asOpt[T](implicit r: Reads[T]): ColumnReads[Option[T]] = row =>
+      Try(row.getString(columnBuilder.index))
         .filter(_.nonEmpty)
         .map(r.read)
         .fold(

@@ -11,56 +11,50 @@ import java.nio.file.Paths
 
 class CSVSpec extends TestSpec with SparkTestSupport { self =>
 
-  case class Maximum(
+  private case class Maximum(
       p1: Int, p2: Int, p3: Int, p4: Int, p5: Int, p6: Int, p7: Int, p8: Int, p9: Int, p10: Int,
       p11: Int, p12: Int, p13: Int, p14: Int, p15: Int, p16: Int, p17: Int, p18: Int, p19: Int,
       p20: Int, p21: Int, p22: Int
   )
-  object Maximum {
-    implicit val maximumEncoder: Encoder[Maximum] = Encoders.product[Maximum]
-    implicit val maximumReads: ColumnReads[Maximum] = (
-      column(0).as[Int] ~
-        column(1).as[Int] ~
-        column(2).as[Int] ~
-        column(3).as[Int] ~
-        column(4).as[Int] ~
-        column(5).as[Int] ~
-        column(6).as[Int] ~
-        column(7).as[Int] ~
-        column(8).as[Int] ~
-        column(9).as[Int] ~
-        column(10).as[Int] ~
-        column(11).as[Int] ~
-        column(12).as[Int] ~
-        column(13).as[Int] ~
-        column(14).as[Int] ~
-        column(15).as[Int] ~
-        column(16).as[Int] ~
-        column(17).as[Int] ~
-        column(18).as[Int] ~
-        column(19).as[Int] ~
-        column(20).as[Int] ~
-        column(21).as[Int]
-      ) (Maximum.apply _)
-  }
+  private implicit val maximumEncoder: Encoder[Maximum] = Encoders.product[Maximum]
+  private implicit val maximumReads: ColumnReads[Maximum] = (
+    column(0).as[Int] ~
+    column(1).as[Int] ~
+    column(2).as[Int] ~
+    column(3).as[Int] ~
+    column(4).as[Int] ~
+    column(5).as[Int] ~
+    column(6).as[Int] ~
+    column(7).as[Int] ~
+    column(8).as[Int] ~
+    column(9).as[Int] ~
+    column(10).as[Int] ~
+    column(11).as[Int] ~
+    column(12).as[Int] ~
+    column(13).as[Int] ~
+    column(14).as[Int] ~
+    column(15).as[Int] ~
+    column(16).as[Int] ~
+    column(17).as[Int] ~
+    column(18).as[Int] ~
+    column(19).as[Int] ~
+    column(20).as[Int] ~
+    column(21).as[Int]
+  ) (Maximum.apply _)
 
-  case class Person(name: String, age: Int, city: Option[String])
-  object Person {
-    implicit val personEncoder: Encoder[Person] = Encoders.product[Person]
-    implicit val personReads: ColumnReads[Person] = (
-      column(0).as[String] ~
-        column(1).as[Int] ~
-        column(2).asOpt[String]
-      ) (Person.apply _)
-  }
+  private case class Person(name: String, age: Int, city: Option[String])
+  private implicit val personEncoder: Encoder[Person] = Encoders.product[Person]
+  private implicit val personReads: ColumnReads[Person] = (
+    column(0).as[String] ~
+    column(1).as[Int] ~
+    column(2).asOpt[String]
+  ) (Person.apply _)
 
   "CsvParser#parse" must {
     "parse 22 params case class" in withSparkSession { implicit spark =>
-      import Maximum._
-
       val p = for {
         path <- Task(Paths.get(self.getClass.getResource("/csv/maximum.csv").getPath))
-        rdd  <- Task(CSV.parse(path = path.toString, delimiter = ",", header = true))
+        rdd  <- Task(CSV.parse[Maximum](path = path.toString, delimiter = ",", header = true))
         r    <- Task(rdd.collect().toList)
       } yield r
 
@@ -78,11 +72,9 @@ class CSVSpec extends TestSpec with SparkTestSupport { self =>
 
   "CsvParser#parse(testReads)" must {
     "empty string" in withSparkSession { implicit spark =>
-      import Person._
-
       val p = for {
         path <- Task(Paths.get(self.getClass.getResource("/csv/empty.csv").getPath))
-        rdd  <- Task(CSV.parse(path = path.toString, delimiter = ",", header = true))
+        rdd  <- Task(CSV.parse[Person](path = path.toString, delimiter = ",", header = true))
         r    <- Task(rdd.collect().toList)
       } yield r
 

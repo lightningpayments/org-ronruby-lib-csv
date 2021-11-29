@@ -7,7 +7,7 @@ version := "0.1.0"
 
 lazy val root = project in file(".")
 
-addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full)
+addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.0" cross CrossVersion.full)
 scalacOptions in Compile ++= Seq("-deprecation", "-explaintypes", "-feature", "-unchecked")
 Compile / scalacOptions ++= {
   CrossVersion.partialVersion(scalaVersion.value) match {
@@ -18,6 +18,7 @@ Compile / scalacOptions ++= {
 crossScalaVersions := Seq("2.12.10")
 scalaVersion := crossScalaVersions.value.head
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oSD")
+ThisBuild / scalacOptions += "-P:kind-projector:underscore-placeholders"
 
 val sparkVers = "3.1.2"
 
