@@ -19,6 +19,8 @@ crossScalaVersions := Seq("2.12.10")
 scalaVersion := crossScalaVersions.value.head
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oSD")
 ThisBuild / scalacOptions += "-P:kind-projector:underscore-placeholders"
+parallelExecution in Test := false
+fork in Test := false
 
 val sparkVers = "3.1.2"
 
