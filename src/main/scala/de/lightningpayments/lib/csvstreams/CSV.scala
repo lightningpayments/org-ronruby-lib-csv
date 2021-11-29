@@ -1,7 +1,6 @@
 package de.lightningpayments.lib.csvstreams
 
-import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{Encoder, SparkSession}
+import org.apache.spark.sql.{Dataset, Encoder, Row, SparkSession}
 
 import scala.reflect.ClassTag
 
@@ -17,17 +16,15 @@ object CSV {
     implicit sparkSession: SparkSession,
     encoder: Encoder[T],
     cr: ColumnReads[T]
-  ): RDD[T] =
+  ): Dataset[T] =
     sparkSession
       .read
       .option(DELIMITER_KEY, delimiter)
       .option(HEADER_KEY, header)
       .csv(path)
-      .rdd
-      .map(cr.read(_) match {
-        case ReadResult.ReadSuccess(t) => sparkSession.createDataset(Seq(t)).rdd
-        case ReadResult.ReadFailure(_) => sparkSession.emptyDataset[T].rdd
+      .flatMap[T]((row: Row) => cr.read(row) match {
+        case ReadResult.ReadSuccess(t) => t :: Nil
+        case ReadResult.ReadFailure(_) => Nil
       })
-      .flatMap[T](_.toLocalIterator)
 
 }

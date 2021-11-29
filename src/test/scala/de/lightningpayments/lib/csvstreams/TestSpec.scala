@@ -1,19 +1,22 @@
 package de.lightningpayments.lib.csvstreams
 
 import ch.qos.logback.classic.LoggerContext
-import org.mockito.Mockito
-import org.mockito.scalatest.MockitoSugar
-import org.mockito.stubbing.Stubber
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
-import org.scalatestplus.play.PlaySpec
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{BeforeAndAfterEach, OptionValues}
 import org.slf4j.LoggerFactory
 import zio.Task
 
 import scala.util.Try
 
-class TestSpec extends PlaySpec with MockitoSugar with ScalaFutures with BeforeAndAfterEach with BeforeAndAfterAll {
+class TestSpec
+  extends AnyWordSpec
+  with Matchers
+  with OptionValues
+  with ScalaFutures
+  with BeforeAndAfterEach
+  with Serializable {
 
   /**
    * The timeout to wait for the future before declaring it as failed.
@@ -29,28 +32,8 @@ class TestSpec extends PlaySpec with MockitoSugar with ScalaFutures with BeforeA
 
   implicit val outerScope: Unit = org.apache.spark.sql.catalyst.encoders.OuterScopes.addOuterScope(this)
 
-  /**
-   * To prevent tests to fail because of future timeout issues, we override the default behavior.
-   * Note: it is an implicit Option for the ScalaFutures method 'whenReady'
-   */
-  implicit val defaultPatience: PatienceConfig = PatienceConfig(
-    timeout = Span(futurePatienceTimeout, Seconds),
-    interval = Span(futurePatienceInterval, Millis)
-  )
-
-  /**
-   * Wrapper method for mockito s doReturn method.
-   * Resolves "ambiguous reference to overloaded definition" error
-   */
-  def doReturn(toBeReturned: Any): Stubber = {
-    Mockito.doReturn(toBeReturned, Nil: _*)
-  }
-
-  /**
-   * @inheritdoc
-   */
-  override def beforeAll(): Unit = {
-    try super.beforeAll()
+  override def beforeEach(): Unit = {
+    try super.beforeEach()
     finally {
       // shutdown logger
       Try(LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]).map { ctx =>
@@ -60,6 +43,7 @@ class TestSpec extends PlaySpec with MockitoSugar with ScalaFutures with BeforeA
     }
   }
 
-  def whenReady[T, U](io: => Task[T])(f: Either[Throwable, T] => U): U = zio.Runtime.default.unsafeRun(io.either.map(f))
+  def whenReady[T, U](io: => Task[T])(f: Either[Throwable, T] => U): U =
+    zio.Runtime.default.unsafeRun(io.either.map(f))
 
 }
