@@ -21,9 +21,11 @@ object CSV {
       .option(DELIMITER_KEY, delimiter)
       .option(HEADER_KEY, header)
       .csv(path)
-      .flatMap[A]((row: Row) => cr.read(row) match {
-        case ReadResult.ReadSuccess(a) => a :: Nil
-        case ReadResult.ReadFailure(_) => Nil
-      })
+      .flatMap[A]((row: Row) =>
+        cr.read(row) match {
+          case ReadResult.ReadSuccess(a) => List.apply[A](a)
+          case ReadResult.ReadFailure(_) => List.empty[A]
+        }
+      )
 
 }
