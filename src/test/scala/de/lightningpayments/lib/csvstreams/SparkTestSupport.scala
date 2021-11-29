@@ -16,6 +16,6 @@ trait SparkTestSupport extends Serializable {
     builder.getOrCreate()
   }
 
-  def withSparkSession[A, T](f: SparkSession => T): T = f(spark)
+  def withSparkSession[A](f: SparkSession => A): A = f(spark)
 
 }

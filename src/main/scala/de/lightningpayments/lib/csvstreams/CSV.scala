@@ -1,5 +1,6 @@
 package de.lightningpayments.lib.csvstreams
 
+import de.lightningpayments.lib.csvstreams.ColumnReads._
 import org.apache.spark.sql.{Dataset, Encoder, Row, SparkSession}
 
 object CSV {

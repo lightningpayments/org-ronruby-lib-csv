@@ -1,14 +1,14 @@
 package de.lightningpayments.lib.csvstreams
 
-import de.lightningpayments.lib.csvstreams.ReadResult.{ReadFailure, ReadSuccess}
+import de.lightningpayments.lib.csvstreams.ReadResult.{ReadFailure, ReadResult, ReadSuccess}
 import org.apache.spark.sql.Row
 import play.api.libs.functional.{Applicative, FunctionalCanBuild, Functor, ~}
 
-trait ColumnReads[T] extends Serializable {
-  def read(line: Row): ReadResult[T]
-}
-
 object ColumnReads {
+
+  trait ColumnReads[T] extends Serializable {
+    def read(line: Row): ReadResult[T]
+  }
 
   implicit def functor(implicit app: Applicative[ColumnReads]): Functor[ColumnReads] = new Functor[ColumnReads] {
     override def fmap[A, B](m: ColumnReads[A], f: A => B): ColumnReads[B] = app.map[A, B](m, f)

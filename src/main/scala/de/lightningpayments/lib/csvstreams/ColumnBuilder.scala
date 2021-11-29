@@ -1,7 +1,9 @@
 package de.lightningpayments.lib.csvstreams
 
 import cats.implicits._
+import de.lightningpayments.lib.csvstreams.ColumnReads._
 import de.lightningpayments.lib.csvstreams.ReadResult.{ReadFailure, ReadSuccess}
+import org.apache.spark.sql.Row
 
 import scala.util.Try
 
@@ -10,12 +12,12 @@ final case class ColumnBuilder(index: Int) extends AnyVal
 object ColumnBuilder {
 
   implicit class RichColumnBuilder(columnBuilder: ColumnBuilder) extends Serializable {
-    def as[T](implicit r: Reads[T]): ColumnReads[T] = row =>
+    def as[T](implicit r: Reads[T]): ColumnReads[T] = (row: Row) =>
       Try(row.getString(columnBuilder.index))
         .map(r.read)
         .getOrElse(ReadFailure(s"Column ${columnBuilder.index} does not exist."))
 
-    def asOpt[T](implicit r: Reads[T]): ColumnReads[Option[T]] = row =>
+    def asOpt[T](implicit r: Reads[T]): ColumnReads[Option[T]] = (row: Row) =>
       Try(row.getString(columnBuilder.index))
         .filter(_.nonEmpty)
         .map(r.read)

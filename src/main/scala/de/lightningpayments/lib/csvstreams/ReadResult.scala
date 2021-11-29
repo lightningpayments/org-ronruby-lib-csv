@@ -2,9 +2,9 @@ package de.lightningpayments.lib.csvstreams
 
 import cats.Functor
 
-sealed trait ReadResult[+A] extends Product with Serializable
-
 object ReadResult {
+
+  sealed trait ReadResult[+A] extends Product with Serializable
 
   final case class ReadSuccess[A](value: A) extends ReadResult[A]
   final case class ReadFailure(msg: String) extends Throwable with ReadResult[Nothing]

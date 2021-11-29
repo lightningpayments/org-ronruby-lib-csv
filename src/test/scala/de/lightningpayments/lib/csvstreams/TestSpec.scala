@@ -7,6 +7,7 @@ import org.scalatest.{BeforeAndAfterEach, OptionValues}
 import org.slf4j.LoggerFactory
 import zio.Task
 
+import scala.language.higherKinds
 import scala.util.Try
 
 class TestSpec
