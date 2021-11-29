@@ -1,13 +1,16 @@
 package de.lightningpayments.lib.csvstreams
 
+import ch.qos.logback.classic.LoggerContext
 import de.lightningpayments.lib.csvstreams.ColumnBuilder._
 import de.lightningpayments.lib.csvstreams.ColumnReads._
 import de.lightningpayments.lib.csvstreams.Reads._
 import org.apache.spark.sql.{Encoder, Encoders, SparkSession}
+import org.slf4j.LoggerFactory
 import play.api.libs.functional.syntax._
 import zio.{ExitCode, Task, URIO}
 
 import java.nio.file.Paths
+import scala.util.Try
 
 object CSVApp extends zio.App {
   self =>
@@ -51,7 +54,17 @@ object CSVApp extends zio.App {
 
   override def run(args: List[String]): URIO[zio.ZEnv, ExitCode] = {
     Task(CSV.parse[Maximum](path = path.normalize().toString, delimiter = ",", header = true))
-      .map(_.show())
+      .map(_.collect().toList)
+      .map { cons =>
+        // scalastyle:off
+        cons.foreach(n => println(n.toString))
+        // scalastyle:on
+      }
       .exitCode
+  }
+
+  Try(LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]).map { ctx =>
+    ctx.stop()
+    org.slf4j.bridge.SLF4JBridgeHandler.uninstall()
   }
 }

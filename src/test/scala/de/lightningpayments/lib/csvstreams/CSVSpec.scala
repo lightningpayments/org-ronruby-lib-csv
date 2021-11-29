@@ -49,11 +49,10 @@ class CSVSpec extends TestSpec { self =>
 
   "CsvParser#parse" must {
     "parse 22 params case class" in withSparkSession { implicit spark =>
-      val p = for {
-        path <- Task(Paths.get(self.getClass.getResource("/csv/maximum.csv").getPath))
-        ds   <- Task(CSV.parse[Maximum](path = path.normalize().toString, delimiter = ",", header = true))
-        r    <- Task(ds.collect().toList)
-      } yield r
+      val path = Paths.get(self.getClass.getResource("/csv/maximum.csv").getPath)
+      val p: Task[List[Maximum]] =
+        Task(CSV.parse[Maximum](path = path.normalize().toString, delimiter = ",", header = true).collect().toList)
+
 
       // whenReady(p)(_ mustBe Right(List(
       //   Maximum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)
