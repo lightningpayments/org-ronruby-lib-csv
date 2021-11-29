@@ -24,7 +24,6 @@ val sparkVers = "3.1.2"
 
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-guice" % "2.8.2",
-  "com.lightbend.akka" %% "akka-stream-alpakka-csv" % "2.0.2",
   "org.typelevel" %% "cats-core" % "2.6.1",
   "org.typelevel" %% "cats-effect" % "2.5.1",
   "dev.zio" %% "zio-interop-cats" % "2.5.1.0",
@@ -41,6 +40,7 @@ libraryDependencies ++= Seq(
 scapegoatConsoleOutput := true
 scapegoatIgnoredFiles := Seq.empty
 scapegoatVersion in ThisBuild := "1.4.5"
+scapegoatDisabledInspections := Seq("VariableShadowing")
 
 coverageFailOnMinimum := true
 coverageHighlighting := true

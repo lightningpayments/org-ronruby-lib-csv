@@ -44,11 +44,8 @@ class CSVSpec extends TestSpec with SparkTestSupport { self =>
 
   private case class Person(name: String, age: Int, city: Option[String])
   private implicit val personEncoder: Encoder[Person] = Encoders.product[Person]
-  private implicit val personReads: ColumnReads[Person] = (
-    column(index = 0).as[String] ~
-    column(index = 1).as[Int] ~
-    column(index = 2).asOpt[String]
-  ) (Person.apply _)
+  private implicit val personReads: ColumnReads[Person] =
+    (column(index = 0).as[String] ~ column(index = 1).as[Int] ~ column(index = 2).asOpt[String]) (Person.apply _)
 
   "CsvParser#parse" must {
     "parse 22 params case class" in withSparkSession { implicit spark =>
