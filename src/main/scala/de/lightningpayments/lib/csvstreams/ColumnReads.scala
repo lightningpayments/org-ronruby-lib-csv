@@ -4,7 +4,7 @@ import de.lightningpayments.lib.csvstreams.ReadResult.{ReadFailure, ReadSuccess}
 import org.apache.spark.sql.Row
 import play.api.libs.functional.{Applicative, FunctionalCanBuild, Functor, ~}
 
-trait ColumnReads[T] {
+trait ColumnReads[T] extends Serializable {
   def read(line: Row): ReadResult[T]
 }
 

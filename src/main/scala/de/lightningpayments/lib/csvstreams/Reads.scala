@@ -4,7 +4,7 @@ import de.lightningpayments.lib.csvstreams.ReadResult._
 
 import scala.util.Try
 
-trait Reads[T] {
+trait Reads[T] extends Serializable {
   def read(value: String): ReadResult[T]
 }
 

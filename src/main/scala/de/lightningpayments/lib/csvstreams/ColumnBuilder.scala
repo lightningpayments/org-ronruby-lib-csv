@@ -9,7 +9,7 @@ final case class ColumnBuilder(index: Int) extends AnyVal
 
 object ColumnBuilder {
 
-  implicit class RichColumnBuilder(columnBuilder: ColumnBuilder) {
+  implicit class RichColumnBuilder(columnBuilder: ColumnBuilder) extends Serializable {
     def as[T](implicit r: Reads[T]): ColumnReads[T] = line =>
       Try(line.getString(columnBuilder.index))
         .map(r.read)

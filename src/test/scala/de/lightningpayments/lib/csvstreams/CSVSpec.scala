@@ -9,7 +9,7 @@ import zio.ZIO
 
 import java.nio.file.Paths
 
-class CsvParserSpec extends TestSpec with SparkTestSupport { self =>
+class CSVSpec extends TestSpec with SparkTestSupport { self =>
 
   case class Person(name: String, age: Int, city: Option[String])
   object Person {
@@ -57,8 +57,8 @@ class CsvParserSpec extends TestSpec with SparkTestSupport { self =>
   "CsvParser#parse" must {
     "parse 22 params case class" in withSparkSession { implicit spark =>
       val path = Paths.get(self.getClass.getResource("/csv/maximum.csv").getPath)
-      val io = ZIO(CsvParser.parse[Maximum](path = path.toString, delimiter = ",", header = true).collect().toList)
-      whenReady(io)(_ mustBe Right(Seq(
+      val rdd = CSV.parse[Maximum](path = path.toString, delimiter = ",", header = true)
+      whenReady(ZIO(rdd.collect().toList))(_ mustBe Right(Seq(
         Maximum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)
       )))
     }
@@ -67,8 +67,8 @@ class CsvParserSpec extends TestSpec with SparkTestSupport { self =>
   "CsvParser#parse(testReads)" must {
     "empty string" in withSparkSession { implicit spark =>
       val path = Paths.get(self.getClass.getResource("/csv/empty.csv").getPath)
-      val io = ZIO(CsvParser.parse[Person](path = path.toString, delimiter = ",", header = true).collect().toList)
-      whenReady(io)(_ mustBe Right(Nil))
+      val rdd = CSV.parse[Person](path = path.toString, delimiter = ",", header = true)
+      whenReady(ZIO(rdd.collect().toList))(_ mustBe Right(Nil))
     }
     // "multiple lines" in {
     //   val csv =

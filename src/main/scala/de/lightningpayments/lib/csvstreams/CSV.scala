@@ -5,7 +5,7 @@ import org.apache.spark.sql.{Encoder, SparkSession}
 
 import scala.reflect.ClassTag
 
-object CsvParser {
+object CSV {
 
   private final val DELIMITER_KEY = "delimiter"
   private final val HEADER_KEY = "header"
