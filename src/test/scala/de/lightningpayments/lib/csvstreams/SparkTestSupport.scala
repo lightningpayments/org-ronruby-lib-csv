@@ -5,7 +5,7 @@ import org.apache.spark.sql.SparkSession
 
 import java.util.UUID
 
-trait SparkTestSupport {
+trait SparkTestSupport extends Serializable {
 
   private val appName: String = s"app_${UUID.randomUUID().toString}"
   private val master: String = "local[*]"

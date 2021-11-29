@@ -15,20 +15,7 @@ class TestSpec
   with Matchers
   with OptionValues
   with ScalaFutures
-  with BeforeAndAfterEach
-  with Serializable {
-
-  /**
-   * The timeout to wait for the future before declaring it as failed.
-   * Note: Seconds
-   */
-  protected val futurePatienceTimeout: Int = 5
-
-  /**
-   * The interval for the checking whether the future has completed
-   * Note: Milliseconds
-   */
-  protected val futurePatienceInterval: Int = 15
+  with BeforeAndAfterEach {
 
   implicit val outerScope: Unit = org.apache.spark.sql.catalyst.encoders.OuterScopes.addOuterScope(this)
 
@@ -43,7 +30,12 @@ class TestSpec
     }
   }
 
+  /**
+   * ZIO default runtime only for testing.
+   */
+  lazy implicit val runtime: zio.Runtime[zio.ZEnv] = zio.Runtime.default
+
   def whenReady[T, U](io: => Task[T])(f: Either[Throwable, T] => U): U =
-    zio.Runtime.default.unsafeRun(io.either.map(f))
+    runtime.unsafeRun(io.either.map(f))
 
 }

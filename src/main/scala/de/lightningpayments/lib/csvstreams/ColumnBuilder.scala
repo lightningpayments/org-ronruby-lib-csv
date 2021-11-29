@@ -26,4 +26,5 @@ object ColumnBuilder {
   }
 
   def column(index: Int): ColumnBuilder = ColumnBuilder(index)
+
 }

@@ -1,3 +1,3 @@
 package de.lightningpayments.lib.csvstreams
 
-final case class Column(index: Int, value: String)
+final case class Column(index: Int, value: String) extends Serializable

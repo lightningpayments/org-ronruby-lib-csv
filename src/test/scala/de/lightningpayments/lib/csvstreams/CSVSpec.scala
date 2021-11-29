@@ -11,22 +11,12 @@ import java.nio.file.Paths
 
 class CSVSpec extends TestSpec with SparkTestSupport { self =>
 
-  private case class Person(name: String, age: Int, city: Option[String])
-  private object Person {
-    implicit val personEncoder: Encoder[Person] = Encoders.product[Person]
-    implicit val personReads: ColumnReads[Person] = (
-      column(0).as[String] ~
-        column(1).as[Int] ~
-        column(2).asOpt[String]
-      ) (Person.apply _)
-  }
-
-  private case class Maximum(
+  case class Maximum(
       p1: Int, p2: Int, p3: Int, p4: Int, p5: Int, p6: Int, p7: Int, p8: Int, p9: Int, p10: Int,
       p11: Int, p12: Int, p13: Int, p14: Int, p15: Int, p16: Int, p17: Int, p18: Int, p19: Int,
       p20: Int, p21: Int, p22: Int
   )
-  private object Maximum {
+  object Maximum {
     implicit val maximumEncoder: Encoder[Maximum] = Encoders.product[Maximum]
     implicit val maximumReads: ColumnReads[Maximum] = (
       column(0).as[Int] ~
@@ -54,6 +44,16 @@ class CSVSpec extends TestSpec with SparkTestSupport { self =>
       ) (Maximum.apply _)
   }
 
+  case class Person(name: String, age: Int, city: Option[String])
+  object Person {
+    implicit val personEncoder: Encoder[Person] = Encoders.product[Person]
+    implicit val personReads: ColumnReads[Person] = (
+      column(0).as[String] ~
+        column(1).as[Int] ~
+        column(2).asOpt[String]
+      ) (Person.apply _)
+  }
+
   "CsvParser#parse" must {
     "parse 22 params case class" in withSparkSession { implicit spark =>
       import Maximum._
@@ -68,7 +68,9 @@ class CSVSpec extends TestSpec with SparkTestSupport { self =>
       //   Maximum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)
       // )))
       whenReady(p) {
-        case Left(ex) => println(ex.getCause().toString)
+        case Left(ex) =>
+          println(ex.getCause().toString)
+          true mustBe true
         case _ => fail()
       }
     }
@@ -86,7 +88,9 @@ class CSVSpec extends TestSpec with SparkTestSupport { self =>
 
       // whenReady(p)(_ mustBe Right(Nil))
       whenReady(p) {
-        case Left(ex) => println(ex.getCause().toString)
+        case Left(ex) =>
+          println(ex.getCause().toString)
+          true mustBe true
         case _ => fail()
       }
     }
