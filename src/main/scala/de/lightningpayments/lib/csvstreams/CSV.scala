@@ -16,16 +16,12 @@ object CSV {
     encoder: Encoder[A],
     cr: ColumnReads[A]
   ): Dataset[A] =
-    sparkSession
-      .read
-      .option(DELIMITER_KEY, delimiter)
-      .option(HEADER_KEY, header)
-      .csv(path)
-      .flatMap[A]((row: Row) =>
+    sparkSession.read.option(DELIMITER_KEY, delimiter).option(HEADER_KEY, header).csv(path).flatMap[A](
+      (row: Row) =>
         cr.read(row) match {
           case ReadResult.ReadSuccess(a) => List.apply[A](a)
           case ReadResult.ReadFailure(_) => List.empty[A]
         }
-      )
+    )
 
 }

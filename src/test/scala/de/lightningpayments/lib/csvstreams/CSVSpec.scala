@@ -47,12 +47,13 @@ class CSVSpec extends SparkTestSpec { self =>
     (column(index = 0).as[String] ~ column(index = 1).as[Int] ~ column(index = 2).asOpt[String]) (Person.apply _)
 
   test("CsvParser#parse") {
-    val path = Paths.get(self.getClass.getResource("/csv/maximum.csv").getPath)
-    val ds = CSV.parse[Maximum](path = path.normalize().toString, delimiter = ",", header = true)
+    val path = Paths.get(self.getClass.getResource("/csv/maximum.csv").getPath).normalize().toString
 
-    assert(ds.collect().toList == List(
-      Maximum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)
-    ))
+    assert(
+      CSV.parse[Maximum](path = path, delimiter = ",", header = true).collect().toList == List(
+        Maximum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)
+      )
+    )
   }
 
   // "CsvParser#parse(testReads)" must {
