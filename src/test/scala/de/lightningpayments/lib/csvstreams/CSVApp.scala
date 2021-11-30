@@ -54,12 +54,7 @@ object CSVApp extends zio.App {
 
   override def run(args: List[String]): URIO[zio.ZEnv, ExitCode] = {
     Task(CSV.parse[Maximum](path = path.normalize().toString, delimiter = ",", header = true))
-      .map(_.collect().toList)
-      .map { cons =>
-        // scalastyle:off
-        cons.foreach(n => println(n.toString))
-        // scalastyle:on
-      }
+      .map(_.show())
       .exitCode
   }
 

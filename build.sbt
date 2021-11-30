@@ -32,6 +32,7 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % sparkVers % "compile",
   "org.apache.spark" %% "spark-sql" % sparkVers % "compile",
   "ch.qos.logback" % "logback-classic" % "1.2.3" % "test",
+  "com.h2database" % "h2" % "1.4.200" % "test",
   "org.mockito" %% "mockito-scala-scalatest" % "1.14.8" % "test",
   "org.mockito" % "mockito-inline" % "3.3.3" % "test",
   "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % "test",
