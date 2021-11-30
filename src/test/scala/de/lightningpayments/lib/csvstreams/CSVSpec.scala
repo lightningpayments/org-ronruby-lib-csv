@@ -5,11 +5,10 @@ import de.lightningpayments.lib.csvstreams.ColumnReads._
 import de.lightningpayments.lib.csvstreams.Reads._
 import org.apache.spark.sql.{Encoder, Encoders}
 import play.api.libs.functional.syntax._
-import zio.Task
 
 import java.nio.file.Paths
 
-class CSVSpec extends TestSpec { self =>
+class CSVSpec extends SparkTestSpec { self =>
 
   private case class Maximum(
       p1: Int, p2: Int, p3: Int, p4: Int, p5: Int, p6: Int, p7: Int, p8: Int, p9: Int, p10: Int,
@@ -48,23 +47,18 @@ class CSVSpec extends TestSpec { self =>
     (column(index = 0).as[String] ~ column(index = 1).as[Int] ~ column(index = 2).asOpt[String]) (Person.apply _)
 
   "CsvParser#parse" must {
-    "parse 22 params case class" in withSparkSession { implicit spark =>
+    "return" in withSparkSession { implicit spark =>
       val path = Paths.get(self.getClass.getResource("/csv/maximum.csv").getPath)
-      val p: Task[List[Maximum]] =
-        Task(CSV.parse[Maximum](path = path.normalize().toString, delimiter = ",", header = true).collect().toList)
-
-
-      // whenReady(p)(_ mustBe Right(List(
-      //   Maximum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)
-      // )))
-      whenReady(p) {
-        case Left(ex) => ex.printStackTrace()
-        case _ => fail()
-      }
+      CSV.parse[Maximum](
+        path = path.normalize().toString,
+        delimiter = ",",
+        header = true
+      ).collect().toList mustBe
+        List(Maximum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22))
     }
   }
 
-  "CsvParser#parse(testReads)" must {
+  // "CsvParser#parse(testReads)" must {
   //   "empty string" in withSparkSession { implicit spark =>
   //     val p = for {
   //       path <- Task(Paths.get(self.getClass.getResource("/csv/empty.csv").getPath))
@@ -147,6 +141,6 @@ class CSVSpec extends TestSpec { self =>
     //     case Right(_) => fail("programParseStream: ignore unused columns")
     //   }
     // }
-  }
+  // }
 
 }

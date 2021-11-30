@@ -1,11 +1,10 @@
-
 name := "Csv Lib"
 organization := "de.lightningpayments"
 organizationHomepage := None
 organizationName := "lightningpayments"
 version := "0.1.0"
 
-lazy val root = project in file(".")
+credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.0" cross CrossVersion.full)
 scalacOptions in Compile ++= Seq("-deprecation", "-explaintypes", "-feature", "-unchecked")
@@ -49,8 +48,5 @@ coverageHighlighting := true
 coverageMinimum := 100
 coverageExcludedPackages := """<empty>;..*Module.*;"""
 
-// -------------------------------------------------------------------------------------------------
-// Scalastyle Configuration (check style)
-// -------------------------------------------------------------------------------------------------
 scalastyleFailOnError := true
 
